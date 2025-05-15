@@ -24,29 +24,45 @@ const Calcharo = new Cube('Calcharo', {
 });
 
 const Camellya = new Cube('Camellya', {
-	move(cube, startPad, endPad) {
-		const cubeIndex = startPad.cubes.findIndex((c) => c === cube);
-		if (cubeIndex < 0) {
-			throw "Start pad doesn't contain the cube need to be moved";
+	getExtraSteps(stack) {
+		if (stack.length > 2 && chance(0.5)) {
+			const padIndex = stack.findIndex((cube) => cube.name === 'Camellya');
+			const [camellyaCube] = stack.splice(padIndex, 1);
+			stack.push(camellyaCube);
+
+			console.log(
+				`!!!! Camellya change current stack to [${stack
+					.map((c) => c.name)
+					.join(', ')}] before move`
+			);
+
+			return stack.length - 1;
 		}
-
-		let extraSteps = 0;
-		if (chance(0.5)) {
-			extraSteps += startPad.cubes.length - 1;
-			console.log(`>>> Camellya ability grants ${extraSteps} steps`);
-		}
-		const movedCubes = extraSteps
-			? startPad.cubes.splice(cubeIndex, cubeIndex + 1)
-			: startPad.cubes.splice(cubeIndex);
-
-		console.log(
-			`${movedCubes.map((c) => c.name).join(', ')} moved from pad[${
-				startPad.position
-			}] to pad[${endPad.position}]`
-		);
-
-		endPad.cubes = [...endPad.cubes, ...movedCubes];
+		return 0;
 	},
+	// move(cube, startPad, endPad) {
+	// 	const cubeIndex = startPad.cubes.findIndex((c) => c === cube);
+	// 	if (cubeIndex < 0) {
+	// 		throw "Start pad doesn't contain the cube need to be moved";
+	// 	}
+
+	// 	let extraSteps = 0;
+	// 	if (chance(0.5)) {
+	// 		extraSteps += startPad.cubes.length - 1;
+	// 		console.log(`>>> Camellya ability grants ${extraSteps} steps`);
+	// 	}
+	// 	const movedCubes = extraSteps
+	// 		? startPad.cubes.splice(cubeIndex, cubeIndex + 1)
+	// 		: startPad.cubes.splice(cubeIndex);
+
+	// 	console.log(
+	// 		`${movedCubes.map((c) => c.name).join(', ')} moved from pad[${
+	// 			startPad.position
+	// 		}] to pad[${endPad.position}]`
+	// 	);
+
+	// 	endPad.cubes = [...endPad.cubes, ...movedCubes];
+	// },
 });
 
 const Changli = new Cube('Changli', {
@@ -66,7 +82,7 @@ const Changli = new Cube('Changli', {
 			sortedCubes.push(changliCube);
 
 			console.log(
-				`Changli change turn order to [${sortedCubes
+				`??? Changli change turn order to [${sortedCubes
 					.map((c) => c.name)
 					.join(', ')}]`
 			);
@@ -75,24 +91,40 @@ const Changli = new Cube('Changli', {
 });
 
 const Jinhsi = new Cube('Jinhsi', {
-	afterSort(_, pads) {
-		const currentPad = pads.find((pad) =>
-			pad.cubes.some((cube) => cube.name === 'Jinhsi')
-		);
-		if (!currentPad) return;
+	// afterSort(_, pads) {
+	// 	const currentPad = pads.find((pad) =>
+	// 		pad.cubes.some((cube) => cube.name === 'Jinhsi')
+	// 	);
+	// 	if (!currentPad) return;
+	// 	if (
+	// 		chance(0.4) &&
+	// 		currentPad.cubes.findIndex((cube) => cube.name === 'Jinhsi') <
+	// 			currentPad.cubes.length - 1
+	// 	) {
+	// 		const padIndex = currentPad.cubes.findIndex(
+	// 			(cube) => cube.name === 'Jinhsi'
+	// 		);
+	// 		const [changliCube] = currentPad.cubes.splice(padIndex, 1);
+	// 		currentPad.cubes.push(changliCube);
+
+	// 		console.log(
+	// 			`Jinhsi change current stack to [${currentPad.cubes
+	// 				.map((c) => c.name)
+	// 				.join(', ')}]`
+	// 		);
+	// 	}
+	onStack(stack) {
+		if (!stack.some((cube) => cube.name === 'Jinhsi')) return;
 		if (
 			chance(0.4) &&
-			currentPad.cubes.findIndex((cube) => cube.name === 'Jinhsi') <
-				currentPad.cubes.length - 1
+			stack.findIndex((cube) => cube.name === 'Jinhsi') < stack.length - 1
 		) {
-			const padIndex = currentPad.cubes.findIndex(
-				(cube) => cube.name === 'Jinhsi'
-			);
-			const [changliCube] = currentPad.cubes.splice(padIndex, 1);
-			currentPad.cubes.push(changliCube);
+			const padIndex = stack.findIndex((cube) => cube.name === 'Jinhsi');
+			const [changliCube] = stack.splice(padIndex, 1);
+			stack.push(changliCube);
 
 			console.log(
-				`Jinhsi change current stack to [${currentPad.cubes
+				`!!!! Jinhsi change current stack to [${stack
 					.map((c) => c.name)
 					.join(', ')}]`
 			);
@@ -100,11 +132,45 @@ const Jinhsi = new Cube('Jinhsi', {
 	},
 });
 
-// const chars = [Carlotta, Calcharo];
-const chars = [SK, Carlotta, Calcharo, Camellya, Changli, Jinhsi];
+// const chars = [SK, Calcharo];
+const chars = [SK, Carlotta, Calcharo, Jinhsi, Camellya, Changli];
+const seaPads = [
+	{
+		position: 0,
+		cubes: [Jinhsi],
+	},
+	{
+		position: -1,
+		cubes: [Carlotta, Calcharo],
+	},
+	{
+		position: -2,
+		cubes: [SK, Camellya],
+	},
+	{
+		position: -3,
+		cubes: [Changli],
+	},
+];
 
-const game = new Game([...chars]);
-game.start(24);
+const naPads = [
+	{
+		position: 0,
+		cubes: [Calcharo],
+	},
+	{
+		position: -1,
+		cubes: [Carlotta, Camellya],
+	},
+	{
+		position: -2,
+		cubes: [Jinhsi, SK],
+	},
+	{
+		position: -3,
+		cubes: [Changli],
+	},
+];
 
 function sim(n: number, turns: number) {
 	const log = console.log;
@@ -142,7 +208,13 @@ function simTop(n: number, length: number, top: number) {
 	while (i < n) {
 		i += 1;
 		const game = new Game([...chars]);
-		game.start(length);
+		// game.start(length);
+		const startPads = seaPads.map((pad) => ({
+			position: pad.position,
+			cubes: [...pad.cubes],
+		}));
+		// log('startPads', startPads);
+		game.start(length, startPads);
 
 		// chars.forEach((cube) => {
 		// 	data[cube.name] =
@@ -177,5 +249,7 @@ function simTop(n: number, length: number, top: number) {
 	console.log = log;
 }
 
+// const game = new Game([...chars]);
+// game.start(24, seaPads);
 // sim(100000, 10);
-// simTop(1000000, 24, 1);
+simTop(3000000, 24, 1);

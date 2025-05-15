@@ -55,7 +55,8 @@ export default class Game {
 		this.cubes = cubes;
 	}
 
-	start(length = 24) {
+	start(length = 24, pads?: Pad[]) {
+		this.pads = pads ?? [];
 		if (
 			this.cubes.some((cube) =>
 				this.cubes.some(
@@ -103,6 +104,8 @@ export default class Game {
 		shuffle(this.cubes);
 		const sortedCubes = this.cubes;
 
+		console.log(`>>> orders [${sortedCubes.map((c) => c.name).join(', ')}]`);
+
 		sortedCubes.forEach((cube) => {
 			if (cube.afterSort) cube.afterSort(sortedCubes, this.pads);
 		});
@@ -112,17 +115,19 @@ export default class Game {
 			const diceRolled = diceRolls[cube.name];
 			const currentPad =
 				this.pads.find((pad) => pad.cubes.includes(cube)) ?? new Pad(0, [cube]);
-			const extraSteps = cube.getExtraSteps(
-				currentPad.cubes,
-				diceRolls,
-				sortedCubes
-			);
+			const extraSteps = cube.getExtraSteps
+				? cube.getExtraSteps(currentPad.cubes, diceRolls, sortedCubes)
+				: 0;
 			const totalSteps = diceRolled + extraSteps;
 
 			const nextPosition = currentPad.position + totalSteps;
 			const nextPad = this.getPadAtPosition(nextPosition);
 
 			move(cube, currentPad, nextPad);
+			nextPad.cubes.forEach((c) => {
+				if (c.onStack) c.onStack(nextPad.cubes);
+			});
+
 			if (nextPad.position >= length) {
 				isEnd = true;
 			}

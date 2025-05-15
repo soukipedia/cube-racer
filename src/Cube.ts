@@ -5,8 +5,9 @@ type CubeConfig = {
 		sortedCubes: Cube[]
 	) => number;
 	roll?: () => number;
-	move?: (cube: Cube, startPad: Pad, endPad: Pad) => void;
+	// move?: (cube: Cube, startPad: Pad, endPad: Pad) => void;
 	afterSort?: (sortedCubes: Cube[], pads: Pad[]) => void;
+	onStack?: (stack: Cube[]) => void;
 };
 
 class Pad {
@@ -18,23 +19,20 @@ class Pad {
 	}
 }
 
-export default class Cube {
+export default class Cube implements CubeConfig {
 	name: string;
-	getExtraSteps: (
+	getExtraSteps?: (
 		stack: Cube[],
 		rollDice: { [key: string]: number },
 		sortedCubes: Cube[]
 	) => number;
 	roll?: () => number;
-	move?: (cube: Cube, startPad: Pad, endPad: Pad) => void;
+	// move?: (cube: Cube, startPad: Pad, endPad: Pad) => void;
 	afterSort?: (sortedCubes: Cube[], pads: Pad[]) => void;
+	onStack?: (stack: Cube[]) => void;
 
 	constructor(name: string, config?: CubeConfig) {
 		this.name = name;
-		this.getExtraSteps = config?.getExtraSteps
-			? config?.getExtraSteps
-			: () => 0;
-		this.roll = config?.roll;
-		this.move = config?.move;
+		Object.assign(this, config);
 	}
 }
