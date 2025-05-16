@@ -107,17 +107,18 @@ const Cartethyia: Cube = {
 	name: 'Cartethyia',
 	getExtraStepsBeforeMove(cubes, pads, gameData) {
 		if (!gameData.Cartethyia?.isAbilityTrigged) return 0;
-		if (chance(0.6)) {
-			console.log(`!!! Cartethyia's ability: grants 2 extra steps`);
-			return 2;
-		}
-		return 0;
+		// if (chance(0.6)) {
+		console.log(`!!! Cartethyia's ability: grants 2 extra steps`);
+		return 2;
+		// }
+		// return 0;
 	},
 	afterMove(cubes, pads, gameData) {
 		if (gameData.Cartethyia?.isAbilityTrigged) return;
 
 		const scores = getAllCubeScores(pads);
 		if (
+			chance(0.6) &&
 			Object.keys(scores).every(
 				(name) =>
 					name !== 'Cartethyia' &&
