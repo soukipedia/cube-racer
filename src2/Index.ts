@@ -121,8 +121,8 @@ const Cartethyia: Cube = {
 			chance(0.6) &&
 			Object.keys(scores).every(
 				(name) =>
-					name !== 'Cartethyia' &&
-					scores[name as CubeName] > scores['Cartethyia']
+					scores[name as CubeName] === 0 ||
+					scores[name as CubeName] >= scores.Cartethyia
 			)
 		) {
 			console.log(
@@ -144,8 +144,6 @@ const Phoebe: Cube = {
 	},
 };
 
-const cubes = [Roccia, Brant, Cantarella, Zani, Cartethyia, Phoebe];
-
 // const game = new Game({
 // 	cubes,
 // 	length: 24,
@@ -153,7 +151,12 @@ const cubes = [Roccia, Brant, Cantarella, Zani, Cartethyia, Phoebe];
 
 // game.start();
 
-function sim(n: number, top: number, isLogging: boolean = false) {
+function sim(
+	cubes: Cube[],
+	n: number,
+	top: number,
+	isLogging: boolean = false
+) {
 	const log = console.log;
 	if (!isLogging) {
 		console.log = () => {};
@@ -167,6 +170,8 @@ function sim(n: number, top: number, isLogging: boolean = false) {
 		Cartethyia: 0,
 		Phoebe: 0,
 	};
+
+	let carte = 0;
 
 	let i = 0;
 	while (i < n) {
@@ -191,13 +196,22 @@ function sim(n: number, top: number, isLogging: boolean = false) {
 		// 		.map((name) => `\t${name}: ${scores[name]}`)
 		// 		.join('\n')}`
 		// );
+		if (game.data.Cartethyia?.isAbilityTrigged) {
+			carte += 1;
+		}
 	}
 
 	Object.keys(cubeData).forEach((name) => {
 		log(`${name}: ${(100 * cubeData[name as CubeName]) / n}%`);
 	});
+	log(`Cartethyia's ability triggered ${carte} times in ${n} simulations`);
 
 	console.log = log;
 }
 
-sim(100, 4, true);
+// const cubes = [Roccia, Brant, Cantarella, Zani, Cartethyia, Phoebe];
+const cubes = [Roccia, Brant, Cantarella, Zani, Cartethyia, Phoebe];
+
+// sim(100, 4, true);
+sim(cubes, 1000000, 4);
+// sim(1000, 1, true);
