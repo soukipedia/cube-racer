@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "./src2",
     "strict": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
     "target": "ES2024",
     "module": "CommonJS"
   },
-  "include": ["src"]
+  "include": ["src2"]
 }
